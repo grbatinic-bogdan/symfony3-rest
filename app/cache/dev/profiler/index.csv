@@ -1,0 +1,4 @@
+e4d509,127.0.0.1,GET,http://localhost:8000/,1485100984,,302
+e998eb,127.0.0.1,GET,http://localhost:8000/login,1485100984,,200
+3b275e,127.0.0.1,GET,http://localhost:8000/app_dev.php/api/programmers,1485100989,,200
+4d7b46,127.0.0.1,GET,http://localhost:8000/app_dev.php/api/programmers,1485101042,,200

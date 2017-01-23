@@ -1,0 +1,9 @@
+app_web:
+    resource: "@AppBundle/Controller/Web"
+    type:     annotation
+
+app_api:
+    resource: "@AppBundle/Controller/Api"
+    type:     annotation
+    defaults:
+        _format: json
