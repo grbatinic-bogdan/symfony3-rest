@@ -2,3 +2,10 @@ e4d509,127.0.0.1,GET,http://localhost:8000/,1485100984,,302
 e998eb,127.0.0.1,GET,http://localhost:8000/login,1485100984,,200
 3b275e,127.0.0.1,GET,http://localhost:8000/app_dev.php/api/programmers,1485100989,,200
 4d7b46,127.0.0.1,GET,http://localhost:8000/app_dev.php/api/programmers,1485101042,,200
+386d70,127.0.0.1,GET,http://localhost:8000/app_dev.php/,1485717952,,302
+8396e7,127.0.0.1,GET,http://localhost:8000/app_dev.php/login,1485717952,,200
+2c305d,127.0.0.1,GET,http://localhost:8000/app_dev.php/api/programmers,1485717974,,200
+a89be8,127.0.0.1,GET,http://localhost:8000/app_dev.php/api/programmers,1485718047,,200
+654559,127.0.0.1,GET,http://localhost:8000/app_dev.php/api/programmers,1485718084,,200
+e5c4a1,127.0.0.1,GET,http://localhost:8000/app_dev.php/api/programmer,1485718087,,404
+2e1097,127.0.0.1,GET,http://localhost:8000/app_dev.php/api/programmers,1485718094,,200

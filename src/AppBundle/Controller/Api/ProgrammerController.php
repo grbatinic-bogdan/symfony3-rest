@@ -15,18 +15,12 @@ use AppBundle\Controller\BaseController;
 use AppBundle\Entity\Programmer;
 use AppBundle\Form\ProgrammerType;
 use AppBundle\Form\UpdateProgrammerType;
-use AppBundle\Pagination\PaginatedCollection;
-use AppBundle\Pagination\PaginationFactory;
 use AppBundle\Serializer\ProductNameConverter;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
-use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -97,9 +91,11 @@ class ProgrammerController extends BaseController
     public function listAction()
     {
         $request = $this->get('request_stack')->getCurrentRequest();
+        $filter = $request->query->get('filter');
+
         $qb = $this->getDoctrine()
             ->getRepository('AppBundle:Programmer')
-            ->findAllQueryBuilder();
+            ->findAllQueryBuilder($filter);
 
         $paginatedCollection = $this->get('pagination_factory')->createCollection($qb, $request, 'api_programmers_collection');
 
@@ -167,17 +163,13 @@ class ProgrammerController extends BaseController
      */
     private function serialize($data)
     {
+
+        $serializer = $this->get('my_serializer');
+
         $productNameConverter = new ProductNameConverter();
-        //$normalizer = new ObjectNormalizer();
-        $normalizer = new ObjectNormalizer(null, $productNameConverter);
-        $normalizer->setIgnoredAttributes(array(
-            'password',
-            'salt',
-            '__initializer__',
-            '__cloner__',
-            '__isInitialized__',
-            'user'
-        ));
+        $normalizer = new ObjectNormalizer();
+
+
         $serializer = new Serializer(array($normalizer), array(new JsonEncoder()));
 
         return $serializer->serialize($data, 'json');
@@ -197,7 +189,17 @@ class ProgrammerController extends BaseController
 
     protected function createApiResponse($data, $statusCode = 200)
     {
-        $json = $this->serialize($data);
+        $serializer = $this->get('my_serializer');
+
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $group = ($request->query->getBoolean('deep')) ? 'deep' : 'default';
+
+        $json = $serializer->serialize($data, 'json', array(
+            'groups' => array(
+                $group
+            ),
+            'include_relations' => $request->query->getBoolean('deep')
+        ));
 
         return new Response($json, $statusCode, array(
             'Content-Type' => 'application/json'

@@ -8,7 +8,11 @@
 
 namespace AppBundle\Pagination;
 
-
+/**
+ * Class PaginatedCollection
+ * @package AppBundle\Pagination
+ * TODO: add @Link annotation to define links
+ */
 class PaginatedCollection
 {
     private $items;

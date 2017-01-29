@@ -59,6 +59,24 @@ class ProgrammerControllerTest extends ApiTestCase
             'tagLine'
         ));
         $this->asserter()->assertResponsePropertyEquals($response, 'nickname', 'UnitTester');
+        $this->asserter()->assertResponsePropertyEquals(
+            $response,
+            '_links.self',
+            $this->adjustUri('/api/programmers/UnitTester')
+        );
+    }
+
+    public function testGETProgrammerDeep()
+    {
+        $this->createProgrammer(array(
+            'nickname' => 'UnitTester',
+            'avatarNumber' => 3,
+        ));
+        $response = $this->client->get('/api/programmers/UnitTester?deep=1');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->asserter()->assertResponsePropertiesExist($response, array(
+            'user.username'
+        ));
     }
 
     public function testGETProgrammersCollection()
@@ -80,6 +98,10 @@ class ProgrammerControllerTest extends ApiTestCase
 
     public function testGETProgrammersCollectionPaginated()
     {
+        $this->createProgrammer(array(
+            'nickname' => 'willnotmatch',
+            'avatarNumber' => 5,
+        ));
 
         for ($i = 0; $i < 25; $i++) {
             $this->createProgrammer(array(
@@ -88,7 +110,7 @@ class ProgrammerControllerTest extends ApiTestCase
             ));
         }
 
-        $response = $this->client->get('/api/programmers');
+        $response = $this->client->get('/api/programmers?filter=programmer');
         $this->assertEquals(200, $response->getStatusCode());
         $this->asserter()->assertResponsePropertyEquals(
             $response,

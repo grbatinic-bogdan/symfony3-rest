@@ -4,12 +4,18 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use AppBundle\Annotation\Link;
 
 /**
  * Programmer
  *
  * @ORM\Table(name="battle_programmer")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ProgrammerRepository")
+ * @Link(
+ *  "self",
+ *  route = "api_programmers_show",
+ *  params = { "nickname": "object.getNickname()" }
+ * )
  */
 class Programmer
 {

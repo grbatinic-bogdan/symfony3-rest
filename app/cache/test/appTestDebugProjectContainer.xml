@@ -81,6 +81,8 @@
     <parameter key="router.cache_class_prefix">appTestDebugProjectContainer</parameter>
     <parameter key="request_listener.http_port">80</parameter>
     <parameter key="request_listener.https_port">443</parameter>
+    <parameter key="serializer.mapping.cache.file">/Users/bogdan/Sites/symfony3-rest/app/cache/test/serialization.php</parameter>
+    <parameter key="serializer.mapping.cache.prefix"></parameter>
     <parameter key="security.authentication.trust_resolver.anonymous_class">Symfony\Component\Security\Core\Authentication\Token\AnonymousToken</parameter>
     <parameter key="security.authentication.trust_resolver.rememberme_class">Symfony\Component\Security\Core\Authentication\Token\RememberMeToken</parameter>
     <parameter key="security.role_hierarchy.roles" type="collection"/>
@@ -351,6 +353,29 @@
     <service id="pagination_factory" class="AppBundle\Pagination\PaginationFactory">
       <argument type="service" id="router"/>
     </service>
+    <service id="programmer_normalizer" class="AppBundle\Serializer\ProgrammerNormalizer">
+      <tag name="serializer.normalizer"/>
+      <argument>null</argument>
+      <argument type="service" id="programmer_name_converter"/>
+      <argument type="service" id="router"/>
+      <argument type="service" id="annotations.reader"/>
+    </service>
+    <service id="paginated_collection_normalizer" class="Symfony\Component\Serializer\Normalizer\ObjectNormalizer">
+      <argument>null</argument>
+      <argument type="service" id="programmer_name_converter"/>
+    </service>
+    <service id="user_normalizer" class="AppBundle\Serializer\UserNormalizer"/>
+    <service id="programmer_name_converter" class="AppBundle\Serializer\ProductNameConverter"/>
+    <service id="my_serializer" class="Symfony\Component\Serializer\Serializer">
+      <argument type="collection">
+        <argument type="service" id="user_normalizer"/>
+        <argument type="service" id="programmer_normalizer"/>
+        <argument type="service" id="paginated_collection_normalizer"/>
+      </argument>
+      <argument type="collection">
+        <argument type="service" id="serializer.encoder.json"/>
+      </argument>
+    </service>
     <service id="controller_name_converter" class="Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser" public="false">
       <tag name="monolog.logger" channel="request"/>
       <argument type="service" id="kernel"/>
@@ -427,6 +452,14 @@
           </service>
         </argument>
         <argument type="service">
+          <service class="Symfony\Bundle\FrameworkBundle\CacheWarmer\SerializerCacheWarmer" public="false">
+            <tag name="kernel.cache_warmer"/>
+            <argument type="collection"/>
+            <argument>/Users/bogdan/Sites/symfony3-rest/app/cache/test/serialization.php</argument>
+            <argument type="service" id="cache.serializer"/>
+          </service>
+        </argument>
+        <argument type="service">
           <service class="Symfony\Bundle\FrameworkBundle\CacheWarmer\AnnotationsCacheWarmer" public="false">
             <tag name="kernel.cache_warmer"/>
             <argument type="service" id="annotations.reader"/>
@@ -451,7 +484,7 @@
                 <tag name="cache.pool" clearer="cache.default_clearer"/>
                 <argument>y7FjeT52tZ</argument>
                 <argument>0</argument>
-                <argument>E6e-BTsfDzqW5YeBHaXWn4</argument>
+                <argument>h8hjs0Gw0phfgzp0fg66wK</argument>
                 <argument>/Users/bogdan/Sites/symfony3-rest/app/cache/test/pools</argument>
                 <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
                 <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
@@ -579,7 +612,7 @@
           <tag name="monolog.logger" channel="cache"/>
           <argument>Z2cEwTn+wT</argument>
           <argument>null</argument>
-          <argument>E6e-BTsfDzqW5YeBHaXWn4</argument>
+          <argument>h8hjs0Gw0phfgzp0fg66wK</argument>
           <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
           <factory class="Symfony\Component\PropertyAccess\PropertyAccessor" method="createCache"/>
         </service>
@@ -600,7 +633,17 @@
       <tag name="cache.pool" clearer="cache.default_clearer"/>
       <argument>sv7xYFyobD</argument>
       <argument>0</argument>
-      <argument>E6e-BTsfDzqW5YeBHaXWn4</argument>
+      <argument>h8hjs0Gw0phfgzp0fg66wK</argument>
+      <argument>/Users/bogdan/Sites/symfony3-rest/app/cache/test/pools</argument>
+      <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
+      <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
+    </service>
+    <service id="cache.serializer" class="Symfony\Component\Cache\Adapter\AdapterInterface" public="false">
+      <tag name="cache.pool"/>
+      <tag name="cache.pool" clearer="cache.default_clearer"/>
+      <argument>VLMaOC60qW</argument>
+      <argument>0</argument>
+      <argument>h8hjs0Gw0phfgzp0fg66wK</argument>
       <argument>/Users/bogdan/Sites/symfony3-rest/app/cache/test/pools</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
@@ -610,7 +653,7 @@
       <tag name="cache.pool" clearer="cache.default_clearer"/>
       <argument>EIbo-8HoFF</argument>
       <argument>0</argument>
-      <argument>E6e-BTsfDzqW5YeBHaXWn4</argument>
+      <argument>h8hjs0Gw0phfgzp0fg66wK</argument>
       <argument>/Users/bogdan/Sites/symfony3-rest/app/cache/test/pools</argument>
       <argument type="service" id="monolog.logger.cache"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
@@ -622,6 +665,9 @@
       </call>
       <call method="addPool">
         <argument type="service" id="cache.system"/>
+      </call>
+      <call method="addPool">
+        <argument type="service" id="cache.serializer"/>
       </call>
       <call method="addPool">
         <argument type="service" id="cache.annotations"/>
@@ -1621,6 +1667,75 @@
     <service id="annotations.reader" class="Doctrine\Common\Annotations\AnnotationReader" public="false">
       <autowiring-type>Doctrine\Common\Annotations\Reader</autowiring-type>
     </service>
+    <service id="serializer" class="Symfony\Component\Serializer\Serializer">
+      <argument type="collection">
+        <argument type="service" id="programmer_normalizer"/>
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer" public="false">
+            <tag name="serializer.normalizer" priority="-900"/>
+          </service>
+        </argument>
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Normalizer\DateTimeNormalizer" public="false">
+            <tag name="serializer.normalizer" priority="-910"/>
+          </service>
+        </argument>
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Normalizer\DataUriNormalizer" public="false">
+            <tag name="serializer.normalizer" priority="-920"/>
+          </service>
+        </argument>
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Normalizer\ArrayDenormalizer" public="false">
+            <tag name="serializer.normalizer" priority="-990"/>
+          </service>
+        </argument>
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Normalizer\ObjectNormalizer" public="false">
+            <tag name="serializer.normalizer" priority="-1000"/>
+            <argument type="service">
+              <service class="Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory" public="false">
+                <argument type="service">
+                  <service class="Symfony\Component\Serializer\Mapping\Loader\LoaderChain" public="false">
+                    <argument type="collection"/>
+                  </service>
+                </argument>
+                <argument>null</argument>
+              </service>
+            </argument>
+            <argument>null</argument>
+            <argument type="service" id="property_accessor"/>
+            <argument>null</argument>
+          </service>
+        </argument>
+      </argument>
+      <argument type="collection">
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Encoder\YamlEncoder" public="false">
+            <tag name="serializer.encoder"/>
+          </service>
+        </argument>
+        <argument type="service" id="serializer.encoder.json"/>
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Encoder\XmlEncoder" public="false">
+            <tag name="serializer.encoder"/>
+          </service>
+        </argument>
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Encoder\CsvEncoder" public="false">
+            <tag name="serializer.encoder"/>
+          </service>
+        </argument>
+      </argument>
+    </service>
+    <service id="serializer.mapping.cache.symfony" class="Symfony\Component\Cache\Adapter\PhpArrayAdapter">
+      <argument>/Users/bogdan/Sites/symfony3-rest/app/cache/test/serialization.php</argument>
+      <argument type="service" id="cache.serializer"/>
+      <factory class="Symfony\Component\Cache\Adapter\PhpArrayAdapter" method="create"/>
+    </service>
+    <service id="serializer.encoder.json" class="Symfony\Component\Serializer\Encoder\JsonEncoder" public="false">
+      <tag name="serializer.encoder"/>
+    </service>
     <service id="security.authorization_checker" class="Symfony\Component\Security\Core\Authorization\AuthorizationChecker">
       <argument type="service" id="security.token_storage"/>
       <argument type="service" id="security.authentication.manager"/>
@@ -1641,7 +1756,7 @@
         </argument>
         <argument type="service">
           <service class="Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider" public="false">
-            <argument>5884f1776b63a6.97860483</argument>
+            <argument>588e5fe620d395.49866743</argument>
           </service>
         </argument>
       </argument>
@@ -1944,7 +2059,7 @@
         <argument type="service">
           <service class="Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener" public="false">
             <argument type="service" id="security.token_storage"/>
-            <argument>5884f1776b63a6.97860483</argument>
+            <argument>588e5fe620d395.49866743</argument>
             <argument type="service" id="monolog.logger.security" on-invalid="null"/>
             <argument type="service" id="security.authentication.manager"/>
           </service>

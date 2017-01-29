@@ -312,16 +312,16 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             }
             not_api_programmers_show:
 
-            // app_api_programmer_list
+            // api_programmers_collection
             if ($pathinfo === '/api/programmers') {
                 if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
                     $allow = array_merge($allow, array('GET', 'HEAD'));
-                    goto not_app_api_programmer_list;
+                    goto not_api_programmers_collection;
                 }
 
-                return array (  '_controller' => 'AppBundle\\Controller\\Api\\ProgrammerController::listAction',  '_format' => 'json',  '_route' => 'app_api_programmer_list',);
+                return array (  '_controller' => 'AppBundle\\Controller\\Api\\ProgrammerController::listAction',  '_format' => 'json',  '_route' => 'api_programmers_collection',);
             }
-            not_app_api_programmer_list:
+            not_api_programmers_collection:
 
             // app_api_programmer_update
             if (preg_match('#^/api/programmers/(?P<nickname>[^/]++)$#s', $pathinfo, $matches)) {

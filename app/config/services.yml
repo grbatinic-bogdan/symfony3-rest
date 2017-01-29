@@ -28,3 +28,38 @@ services:
         class: AppBundle\Pagination\PaginationFactory
         arguments:
             - '@router'
+
+    programmer_normalizer:
+        class: AppBundle\Serializer\ProgrammerNormalizer
+        arguments:
+            - ~
+            - '@programmer_name_converter'
+            - '@router'
+            - '@annotations.reader'
+        tags:
+            - { name: serializer.normalizer }
+
+    paginated_collection_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+        arguments:
+            - ~
+            - '@programmer_name_converter'
+
+    user_normalizer:
+        class: AppBundle\Serializer\UserNormalizer
+
+    programmer_name_converter:
+        class: AppBundle\Serializer\ProductNameConverter
+
+    my_serializer:
+        class: Symfony\Component\Serializer\Serializer
+        arguments:
+            0:
+                - '@user_normalizer'
+                - '@programmer_normalizer'
+                - '@paginated_collection_normalizer'
+            1:
+                - '@serializer.encoder.json'
+
+
+
