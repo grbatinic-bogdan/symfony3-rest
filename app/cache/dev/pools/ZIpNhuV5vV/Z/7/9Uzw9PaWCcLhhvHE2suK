@@ -1,3 +1,0 @@
-1517275574
-%255BAppBundle%255CEntity%255CProgrammer%2540%255BAnnot%255D%255D%255B1%255D
-a:3:{i:0;O:26:"Doctrine\ORM\Mapping\Table":5:{s:4:"name";s:17:"battle_programmer";s:6:"schema";N;s:7:"indexes";N;s:17:"uniqueConstraints";N;s:7:"options";a:0:{}}i:1;O:27:"Doctrine\ORM\Mapping\Entity":2:{s:15:"repositoryClass";s:41:"AppBundle\Repository\ProgrammerRepository";s:8:"readOnly";b:0;}i:2;O:25:"AppBundle\Annotation\Link":3:{s:4:"name";s:4:"self";s:5:"route";s:20:"api_programmers_show";s:6:"params";a:1:{s:8:"nickname";s:20:"object.getNickname()";}}}
