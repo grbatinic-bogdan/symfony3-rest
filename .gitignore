@@ -16,3 +16,4 @@
 /web/bundles/
 /.idea
 app/cache/*
+var/jwt/*

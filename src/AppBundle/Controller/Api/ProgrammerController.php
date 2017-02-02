@@ -18,6 +18,7 @@ use AppBundle\Form\UpdateProgrammerType;
 use AppBundle\Serializer\ProductNameConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,11 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+/**
+ * Class ProgrammerController
+ * @package AppBundle\Controller\Api
+ * @Security("is_granted('ROLE_USER')")
+ */
 class ProgrammerController extends BaseController
 {
     /**
@@ -33,6 +39,9 @@ class ProgrammerController extends BaseController
      */
     public function newAction()
     {
+
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $request = $this->get('request_stack')->getCurrentRequest();
         $programmer = new Programmer();
 
@@ -44,7 +53,7 @@ class ProgrammerController extends BaseController
             $this->throwApiProblemValidationException($form);
         }
 
-        $programmer->setUser($this->findUserByUsername('weaverryan'));
+        $programmer->setUser($this->getUser());
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($programmer);

@@ -21,6 +21,7 @@ services:
         class: AppBundle\EventListener\ApiExceptionSubscriber
         arguments:
             - '%kernel.debug%'
+            - '@api.response_factory'
         tags:
             - { name: kernel.event_subscriber }
 
@@ -60,6 +61,13 @@ services:
                 - '@paginated_collection_normalizer'
             1:
                 - '@serializer.encoder.json'
+
+    jwt_token_authenticator:
+        class: AppBundle\Security\JwtTokenAuthenticator
+        autowire: true
+
+    api.response_factory:
+        class: AppBundle\Api\ResponseFactory
 
 
 

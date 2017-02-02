@@ -22,8 +22,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ProgrammerNormalizer extends ObjectNormalizer implements NormalizerInterface
 {
-    use SerializerAwareTrait;
-
     /**
      * @var Router
      */

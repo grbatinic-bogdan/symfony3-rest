@@ -11,6 +11,7 @@ namespace AppBundle\EventListener;
 
 use AppBundle\Api\ApiProblem;
 use AppBundle\Api\ApiProblemException;
+use AppBundle\Api\ResponseFactory;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -24,9 +25,15 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
      */
     private $debug;
 
-    public function __construct($debug)
+    /**
+     * @var ResponseFactory
+     */
+    private $responseFactory;
+
+    public function __construct($debug, ResponseFactory $responseFactory)
     {
         $this->debug = $debug;
+        $this->responseFactory = $responseFactory;
     }
 
     public static function getSubscribedEvents()
@@ -65,16 +72,8 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             }
         }
 
-        $data = $apiProblem->toArray();
-        if ($data['type'] != 'about:blank') {
-            $data['type'] = 'http://localhost:8000/docs/errors#'.$data['type'];
-        }
+        $response = $this->responseFactory->createResponse($apiProblem);
 
-        $response = new JsonResponse(
-            $data,
-            $apiProblem->getStatusCode()
-        );
-        $response->headers->set('Content-Type', 'application/problem+json');
         $event->setResponse($response);
     }
 
