@@ -16,4 +16,6 @@
 /web/bundles/
 /.idea
 app/cache/*
-var/jwt/*
+!/var/jwt
+/var/jwt/*
+!var/jwt/.gitkeep
